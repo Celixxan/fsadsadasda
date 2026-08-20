@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#080b0d">
-  <meta name="description" content="Verdensbordet — en interaktiv matreise verden rundt.">
+  <meta name="description" content="Verdensbordet — brukernes interaktive matreise verden rundt.">
   <title>Verdensbordet</title>
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
@@ -24,7 +24,7 @@
       <span class="brand-mark" aria-hidden="true">VB</span>
       <span>
         <strong>Verdensbordet</strong>
-        <small>En matreise verden rundt</small>
+        <small>Matreise</small>
       </span>
     </a>
 
@@ -40,7 +40,7 @@
         <span aria-hidden="true">◌</span><span class="sr-only">Pause animasjon</span>
       </button>
       <button class="profile-button" id="profileButton" type="button">
-        <span class="profile-dots" aria-hidden="true"><i>V</i><i>E</i></span>
+        <span class="profile-dots" aria-hidden="true"><i>V</i><i>B</i></span>
         <span id="cloudStatusText">Lokalt</span>
       </button>
     </div>
@@ -192,7 +192,11 @@
           <label class="serving-control">Porsjoner
             <span><button type="button" id="decreaseServings" aria-label="Færre porsjoner">−</button><strong id="servingsValue">2</strong><button type="button" id="increaseServings" aria-label="Flere porsjoner">+</button></span>
           </label>
-          <small class="recipe-mode-copy">Autentisk oppskrift · rettens tradisjonelle utgangspunkt, teknikk og smaksidentitet.</small>
+          <div class="segmented" role="group" aria-label="Oppskriftsversjon">
+            <button type="button" class="is-active" data-recipe-mode="original">Autentisk</button>
+            <button type="button" data-recipe-mode="bistro">Bistro</button>
+          </div>
+          <small class="recipe-mode-copy" id="recipeModeCopy">Autentisk · rettens tradisjonelle utgangspunkt, teknikk og smaksidentitet.</small>
         </div>
       </div>
 
@@ -209,6 +213,7 @@
             <a href="#platingPanel">Servering</a>
           </nav>
           <button class="primary-button" id="finishCookingButton" type="button" disabled>Dokumenter kvelden</button>
+          <button class="secondary-button" id="editRecipeButton" type="button" disabled>Tilpass Bistro</button>
         </aside>
 
         <div class="recipe-content">
@@ -223,6 +228,11 @@
             <div id="ingredientGroups" class="ingredient-groups empty-state">
               <p>Ingen oppskrift valgt ennå.</p>
             </div>
+          </section>
+
+          <section class="recipe-panel" id="signaturePanel" hidden>
+            <div class="panel-heading"><div><span>VB</span><h2>Bistro-grep</h2></div><small>Rikere, friskere og mer restaurantpreget – uten å miste rettens identitet</small></div>
+            <div class="signature-grid" id="signatureTweaks"></div>
           </section>
 
           <section class="recipe-panel" id="stepsPanel">
@@ -278,7 +288,7 @@
         <div class="cover-copy">
           <p class="eyebrow">Volume 01 · 2026</p>
           <h1 id="cookbookHeading">Smaker<br>fra <em>verden.</em></h1>
-          <p>En personlig kokebok</p>
+          <p>En kokebok fra Verdensbordet</p>
           <div class="cover-actions">
             <button class="primary-button" id="printCookbookButton" type="button">Lag PDF / skriv ut</button>
             <button class="secondary-button" id="exportBackupButton" type="button">Eksporter backup</button>
@@ -311,7 +321,7 @@
           <article class="book-preview-card" aria-hidden="true">
             <div class="book-preview-spread">
               <div class="preview-photo"><span>FOTO</span><strong>Helgens rett</strong></div>
-              <div class="preview-recipe"><small>EGEN VRI</small><strong>Oppskrift</strong><i></i><i></i><i></i></div>
+              <div class="preview-recipe"><small>VÅR VERSJON</small><strong>Oppskrift</strong><i></i><i></i><i></i></div>
             </div>
             <p>Hvert kapittel blir et oppslag: én filmsk foto-/minneside og én ren oppskriftsside.</p>
           </article>
@@ -333,7 +343,7 @@
               </select>
             </label>
             <label>Boktittel
-              <input id="bookTitleInput" type="text" value="En matreise verden rundt" maxlength="80">
+              <input id="bookTitleInput" type="text" value="En matreise" maxlength="80">
             </label>
             <label class="book-check-row"><input id="bookIncludeOriginals" type="checkbox"><span>Ta med alle originalbildene i en egen mappe</span></label>
             <button class="primary-button book-export-button" id="exportPhotoBookButton" type="button">Eksporter trykkklar fotobok</button>
@@ -390,8 +400,8 @@
             <label>Hvem gjorde hva?<input id="rolesInput" type="text" placeholder="Person 1: saus · Person 2: kjøtt"></label>
           </div>
 
-          <fieldset class="rating-fieldset"><legend>Person 1 sin vurdering</legend><div class="rating-row" data-rating-owner="person1"></div></fieldset>
-          <fieldset class="rating-fieldset"><legend>Person 2 sin vurdering</legend><div class="rating-row" data-rating-owner="person2"></div></fieldset>
+          <fieldset class="rating-fieldset"><legend>Vurdering 1</legend><div class="rating-row" data-rating-owner="person1"></div></fieldset>
+          <fieldset class="rating-fieldset"><legend>Vurdering 2</legend><div class="rating-row" data-rating-owner="person2"></div></fieldset>
 
           <label>Hva endret dere?<textarea id="twistInput" rows="3" placeholder="Mer syre, sprø topping, annen steketid …"></textarea></label>
           <label>Hva lærte dere?<textarea id="notesInput" rows="3" placeholder="Hva fungerte, og hva krevde justering underveis?"></textarea></label>
@@ -413,9 +423,9 @@
 
   <dialog class="app-dialog" id="profileDialog">
     <form method="dialog" class="dialog-shell profile-dialog" id="profileForm">
-      <header><div><p class="eyebrow">Profil og synk</p><h2>Verdensbordet</h2></div><button class="dialog-close" value="cancel" aria-label="Lukk">×</button></header>
+      <header><div><p class="eyebrow">Profil og synk</p><h2>Profil</h2></div><button class="dialog-close" value="cancel" aria-label="Lukk">×</button></header>
       <section class="profile-local">
-        <div class="profile-pair"><div>1</div><div>2</div></div>
+        <div class="profile-pair"><div>V</div><div>B</div></div>
         <div><strong id="profileModeHeading">Lokal modus</strong><p id="profileModeCopy">Alt lagres på denne enheten i IndexedDB. Sett opp Supabase for innlogging og synk mellom telefoner.</p></div>
       </section>
       <section id="cloudAuthSection">
@@ -480,6 +490,16 @@
         </div>
       </footer>
     </div>
+  </dialog>
+
+  <dialog class="app-dialog" id="recipeEditorDialog">
+    <form method="dialog" class="dialog-shell editor-dialog" id="recipeEditorForm">
+      <header><div><p class="eyebrow">Oppskriftsverksted</p><h2>Gjør retten til deres</h2></div><button class="dialog-close" value="cancel" aria-label="Lukk">×</button></header>
+      <p>Redigeringen lagres som den personlige versjonen på denne enheten og tas med i backup.</p>
+      <label>Bistro-grep<textarea id="editorTweaksInput" rows="7" placeholder="Ett bistrogrep per linje"></textarea></label>
+      <label>Serveringsplan<textarea id="editorPlatingInput" rows="4"></textarea></label>
+      <footer><button class="primary-button" value="default" id="saveRecipeDraftButton">Lagre vår versjon</button></footer>
+    </form>
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>

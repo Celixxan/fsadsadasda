@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#080b0d"/>
+  <circle cx="256" cy="256" r="168" fill="#11191d" stroke="#d8ff63" stroke-width="10"/>
+  <path d="M101 256h310M256 88c68 58 103 114 103 168s-35 110-103 168M256 88c-68 58-103 114-103 168s35 110 103 168" fill="none" stroke="#d8ff63" stroke-width="8" opacity=".6"/>
+  <text x="256" y="286" text-anchor="middle" font-family="Georgia,serif" font-size="96" fill="#edf2ef">VB</text>
+</svg>
