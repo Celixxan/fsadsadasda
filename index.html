@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080b0d">
+  <meta name="description" content="Verdensbordet — en interaktiv matreise verden rundt.">
+  <title>Verdensbordet</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://www.youtube-nocookie.com" crossorigin>
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script src="/config.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#mainContent">Hopp til innhold</a>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="cursor-aura" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#reise" aria-label="Verdensbordet hjem">
+      <span class="brand-mark" aria-hidden="true">VB</span>
+      <span>
+        <strong>Verdensbordet</strong>
+        <small>En matreise verden rundt</small>
+      </span>
+    </a>
+
+    <nav class="primary-nav" aria-label="Hovedmeny">
+      <button class="nav-link is-active" type="button" data-view-target="reise">Reise</button>
+      <button class="nav-link" type="button" data-view-target="oppskrift">Oppskrift</button>
+      <button class="nav-link" type="button" data-view-target="album">Album</button>
+      <button class="nav-link" type="button" data-view-target="kokebok">Kokebok</button>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-button" id="motionButton" type="button" aria-pressed="false" title="Pause animasjon">
+        <span aria-hidden="true">◌</span><span class="sr-only">Pause animasjon</span>
+      </button>
+      <button class="profile-button" id="profileButton" type="button">
+        <span class="profile-dots" aria-hidden="true"><i>V</i><i>E</i></span>
+        <span id="cloudStatusText">Lokalt</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="mainContent">
+    <section class="app-view is-active" data-view="reise" aria-labelledby="journeyHeading">
+      <div class="hero-shell">
+        <div class="hero-copy">
+          <p class="eyebrow">Helgeritual · Volume 01</p>
+          <h1 id="journeyHeading">Én helg.<br><em>Én ny verden.</em></h1>
+          <p class="hero-lead">Kloden velger blant 197 kulinariske destinasjoner. Dere lager en representativ nasjonalrett, dokumenterer deres versjon og bygger en kokebok som faktisk betyr noe.</p>
+
+          <div class="experience-planner" aria-label="Kveldens modus og antall personer">
+            <div class="experience-planner-heading">
+              <div><span>Kveldens modus</span><strong id="experienceSummary">Date · 2 personer</strong></div>
+              <div class="party-size-control" aria-label="Antall personer">
+                <button id="decreasePartySize" type="button" aria-label="Færre personer">−</button>
+                <strong id="partySizeValue">2</strong>
+                <span>personer</span>
+                <button id="increasePartySize" type="button" aria-label="Flere personer">+</button>
+              </div>
+            </div>
+            <div class="experience-modes" role="group" aria-label="Velg modus">
+              <button type="button" class="is-active" data-experience-mode="date">♡ Date</button>
+              <button type="button" data-experience-mode="family">⌂ Familie</button>
+              <button type="button" data-experience-mode="friends">◎ Venner</button>
+              <button type="button" data-experience-mode="solo">◌ Solo</button>
+            </div>
+          </div>
+
+          <div class="hero-actions">
+            <button class="primary-button magnetic" id="randomizeButton" type="button">
+              <span class="button-orbit" aria-hidden="true"></span>
+              <span id="randomizeLabel">Trekk helgens land</span>
+              <span aria-hidden="true">↗</span>
+            </button>
+            <button class="text-button" id="browseCountriesButton" type="button">Utforsk land <span aria-hidden="true">→</span></button>
+          </div>
+
+          <dl class="hero-metrics" aria-label="Fremdrift">
+            <div><dt>Fullført</dt><dd id="completedMetric">0</dd></div>
+            <div><dt>Kontinenter</dt><dd id="continentMetric">0</dd></div>
+            <div><dt>Neste helg</dt><dd id="weekendMetric">—</dd></div>
+          </dl>
+        </div>
+
+        <div class="globe-column">
+          <div class="globe-stage" id="globeStage">
+            <canvas id="globeCanvas" aria-label="Interaktiv 3D-klode. Dra for å rotere, eller trykk på markører."></canvas>
+            <div class="globe-fallback" id="globeFallback">
+              <div class="fallback-orbit" aria-hidden="true"></div>
+              <p>Kloden lastes …</p>
+            </div>
+            <div class="coordinate-readout">
+              <span id="coordinates">59.91° N · 10.75° E</span>
+              <span>OSL → WORLD</span>
+            </div>
+            <div class="globe-hint"><span aria-hidden="true">↔</span> Dra kloden</div>
+          </div>
+
+          <article class="country-reveal" id="countryReveal" hidden>
+            <div>
+              <span class="country-index" id="countryIndex">001 / 197</span>
+              <span class="country-continent" id="countryContinent">Europa</span>
+            </div>
+            <h2 id="countryName">Italia</h2>
+            <p id="countryDish">Ragù alla bolognese</p>
+            <button class="round-action" id="openMissionButton" type="button" aria-label="Åpne helgeoppdrag">↓</button>
+          </article>
+        </div>
+      </div>
+
+      <section class="mission-shell" id="missionSection" aria-labelledby="missionHeading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Helgeoppdrag <span id="missionNumber">—</span></p>
+            <h2 id="missionHeading">Trekk et land for å starte.</h2>
+          </div>
+          <div class="mission-status" id="missionStatus">Ikke låst</div>
+        </div>
+
+        <div class="mission-grid">
+          <article class="mission-card mission-primary">
+            <div class="mission-country-row">
+              <div class="country-code" id="missionCountryCode">—</div>
+              <div>
+                <p id="missionRegion">—</p>
+                <h3 id="missionCountry">Ingen destinasjon</h3>
+                <small id="missionCity">—</small>
+              </div>
+            </div>
+            <div class="dish-display">
+              <span>Representativ rett</span>
+              <h3 id="missionDish">Trekk helgens land</h3>
+              <p id="missionDescription">Kloden unngår allerede fullførte land så lenge det finnes nye destinasjoner.</p>
+            </div>
+            <div class="mission-specs">
+              <div><span>Vanskelighet</span><strong id="missionDifficulty">—</strong></div>
+              <div><span>Estimert tid</span><strong id="missionTime">—</strong></div>
+              <div><span>Smaksprofil</span><strong id="missionProfile">—</strong></div>
+            </div>
+            <div class="mission-actions">
+              <button class="primary-button" id="startRecipeButton" type="button" disabled>Åpne oppskriften</button>
+              <button class="secondary-button" id="lockMissionButton" type="button" disabled>Lås helgen</button>
+              <button class="text-button" id="rerollButton" type="button" disabled>Trekk på nytt</button>
+            </div>
+          </article>
+
+          <article class="mission-card video-card">
+            <div class="card-label"><span>01</span> Stemningsfilm</div>
+            <div class="video-frame" id="videoFrame">
+              <div class="video-placeholder">
+                <span class="play-symbol" aria-hidden="true">▶</span>
+                <strong id="videoPlace">Landfilm vises her</strong>
+                <small>Video lastes først etter at et land er valgt.</small>
+              </div>
+            </div>
+            <div class="video-actions">
+              <button class="secondary-button" id="loadVideoButton" type="button" disabled>Spill av film</button>
+              <a class="text-button" id="videoSearchLink" href="https://www.youtube.com" target="_blank" rel="noreferrer">Finn flere filmer ↗</a>
+            </div>
+          </article>
+
+          <article class="mission-card facts-card">
+            <div class="card-label"><span>02</span> Før dere lager maten</div>
+            <div id="factsList" class="facts-list">
+              <p>Landets fakta og matfortelling dukker opp her.</p>
+            </div>
+            <div class="source-line"><span>Kuratering</span><a id="sourceLabel" href="#" target="_blank" rel="noreferrer">Verdensbordet</a></div>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <section class="app-view" data-view="oppskrift" aria-labelledby="recipeHeading">
+      <div class="recipe-hero">
+        <div>
+          <p class="eyebrow">Kokkemodus · <span id="recipeCountryLabel">Ingen destinasjon</span></p>
+          <h1 id="recipeHeading">Oppskriften bygges <em>slik dere faktisk lager mat.</em></h1>
+          <p id="recipeSummary">Trekk et land først. Alle 197 destinasjoner har en komplett, redigerbar oppskrift med mise en place, varme, tid og sansekriterier.</p>
+          <div class="recipe-context-strip">
+            <div><span>Matkultur</span><p id="recipeOriginNote">Representativ rett og regionale alternativer vises her.</p></div>
+            <div><span>Mattrygghet</span><p id="recipeSafetyNote">Tilpasset sikkerhetsnotat vises her.</p></div>
+            <div><span>Andre kandidater</span><p id="recipeAlternatives">—</p></div>
+          </div>
+        </div>
+        <div class="recipe-hero-actions">
+          <label class="serving-control">Porsjoner
+            <span><button type="button" id="decreaseServings" aria-label="Færre porsjoner">−</button><strong id="servingsValue">2</strong><button type="button" id="increaseServings" aria-label="Flere porsjoner">+</button></span>
+          </label>
+          <small class="recipe-mode-copy">Autentisk oppskrift · rettens tradisjonelle utgangspunkt, teknikk og smaksidentitet.</small>
+        </div>
+      </div>
+
+      <div class="recipe-layout">
+        <aside class="recipe-sidebar">
+          <div class="recipe-progress-block">
+            <div><span>Fremdrift</span><strong id="recipeProgressText">0 / 0</strong></div>
+            <div class="progress-track"><i id="recipeProgressBar"></i></div>
+          </div>
+          <nav class="recipe-anchor-nav" aria-label="Oppskriftsseksjoner">
+            <a href="#ingredientsPanel">Ingredienser</a>
+            <a href="#stepsPanel">Kokkemodus</a>
+            <a href="#balancePanel">Smaksbalanse</a>
+            <a href="#platingPanel">Servering</a>
+          </nav>
+          <button class="primary-button" id="finishCookingButton" type="button" disabled>Dokumenter kvelden</button>
+        </aside>
+
+        <div class="recipe-content">
+          <section class="recipe-panel" id="ingredientsPanel">
+            <div class="panel-heading">
+              <div><span>01</span><h2>Mise en place</h2></div>
+              <div class="shopping-heading-actions">
+                <button class="text-button" id="copyShoppingButton" type="button">Kopier handleliste</button>
+                <button class="secondary-button shopping-launch-button" id="openShoppingDialogButton" type="button">Lag handleliste hos butikk</button>
+              </div>
+            </div>
+            <div id="ingredientGroups" class="ingredient-groups empty-state">
+              <p>Ingen oppskrift valgt ennå.</p>
+            </div>
+          </section>
+
+          <section class="recipe-panel" id="stepsPanel">
+            <div class="panel-heading">
+              <div><span>02</span><h2>Kokkemodus</h2></div>
+              <small>Varme · tid · tegn · neste trekk</small>
+            </div>
+            <div id="recipeSteps" class="steps-list empty-state"><p>Stegene vises her.</p></div>
+          </section>
+
+          <section class="recipe-panel" id="balancePanel">
+            <div class="panel-heading"><div><span>03</span><h2>Smaksbalanse</h2></div></div>
+            <div id="balanceGrid" class="balance-grid empty-state"><p>Smaksprofil vises her.</p></div>
+          </section>
+
+          <section class="recipe-panel" id="platingPanel">
+            <div class="panel-heading"><div><span>04</span><h2>Servering</h2></div></div>
+            <p class="plating-copy" id="platingCopy">Serveringsplan vises her.</p>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="app-view" data-view="album" aria-labelledby="albumHeading">
+      <div class="collection-heading">
+        <div>
+          <p class="eyebrow">Minnene · ikke bare maten</p>
+          <h1 id="albumHeading">Deres <em>matreise.</em></h1>
+        </div>
+        <div class="collection-tools">
+          <label>Søk <input id="albumSearch" type="search" placeholder="Land eller rett"></label>
+          <label>Kontinent <select id="continentFilter"><option value="all">Alle</option></select></label>
+          <label>Sortering <select id="albumSort"><option value="newest">Nyeste først</option><option value="rating">Høyest vurdert</option><option value="country">Land A–Å</option></select></label>
+        </div>
+      </div>
+      <div class="album-stats">
+        <div><span>Land</span><strong id="albumCountryCount">0</strong></div>
+        <div><span>Bilder</span><strong id="albumPhotoCount">0</strong></div>
+        <div><span>Snittscore</span><strong id="albumAverageRating">—</strong></div>
+        <div><span>Brukt på råvarer</span><strong id="albumTotalCost">0 kr</strong></div>
+      </div>
+      <div id="albumGrid" class="album-grid"></div>
+      <div id="albumEmpty" class="collection-empty">
+        <span aria-hidden="true">◎</span>
+        <h2>Første kapittel mangler bare et bilde.</h2>
+        <p>Trekk et land, lag retten og dokumenter kvelden.</p>
+        <button class="primary-button" type="button" data-view-target="reise">Start reisen</button>
+      </div>
+    </section>
+
+    <section class="app-view" data-view="kokebok" aria-labelledby="cookbookHeading">
+      <div class="cookbook-cover">
+        <div class="cover-copy">
+          <p class="eyebrow">Volume 01 · 2026</p>
+          <h1 id="cookbookHeading">Smaker<br>fra <em>verden.</em></h1>
+          <p>En personlig kokebok</p>
+          <div class="cover-actions">
+            <button class="primary-button" id="printCookbookButton" type="button">Lag PDF / skriv ut</button>
+            <button class="secondary-button" id="exportBackupButton" type="button">Eksporter backup</button>
+            <label class="secondary-button file-button">Importer backup<input id="importBackupInput" type="file" accept="application/json"></label>
+          </div>
+        </div>
+        <div class="cover-globe" aria-hidden="true"><div></div><i></i><b id="bookCount">0</b></div>
+      </div>
+
+      <div class="book-progress-section">
+        <div class="section-heading">
+          <div><p class="eyebrow">Bokens fremdrift</p><h2><span id="progressPercent">0</span>% av verden dokumentert</h2></div>
+          <p id="bookProgressCopy">Første mål: 12 retter til Volume 01. Hver eksport kan deles automatisk i trykkbare volum.</p>
+        </div>
+        <div class="world-progress"><i id="worldProgressBar"></i></div>
+        <div id="cookbookChapters" class="chapter-list"></div>
+      </div>
+
+      <section class="book-studio" aria-labelledby="bookStudioHeading">
+        <div class="book-studio-heading">
+          <div>
+            <p class="eyebrow">Bokstudio · høyoppløselig JPG</p>
+            <h2 id="bookStudioHeading">Gjør albumet klart for trykk.</h2>
+            <p>Eksporter ferdige helsider i riktig sideforhold, nummerert for opplasting hos FotoKnudsen, CEWE/Japan Photo eller andre fotobokleverandører.</p>
+          </div>
+          <div class="book-ready-badge"><span id="bookPageEstimate">2 sider</span><small>estimert innhold</small></div>
+        </div>
+
+        <div class="book-studio-grid">
+          <article class="book-preview-card" aria-hidden="true">
+            <div class="book-preview-spread">
+              <div class="preview-photo"><span>FOTO</span><strong>Helgens rett</strong></div>
+              <div class="preview-recipe"><small>EGEN VRI</small><strong>Oppskrift</strong><i></i><i></i><i></i></div>
+            </div>
+            <p>Hvert kapittel blir et oppslag: én filmsk foto-/minneside og én ren oppskriftsside.</p>
+          </article>
+
+          <div class="book-export-controls">
+            <label>Bokformat
+              <select id="bookFormatSelect">
+                <option value="square30">Kvadratisk XL · 30 × 30 cm · FotoKnudsen / CEWE</option>
+                <option value="square21">Kvadratisk L · 21 × 21 cm</option>
+                <option value="landscape28">Liggende L · 28 × 21 cm</option>
+              </select>
+            </label>
+            <label>Kapitler per volum
+              <select id="bookVolumeSizeSelect">
+                <option value="12">12 kapitler · kompakt års-/gavebok</option>
+                <option value="25">25 kapitler · middels volum</option>
+                <option value="50">50 kapitler · stor bok</option>
+                <option value="58" selected>58 kapitler · opptil 118 innholdssider</option>
+              </select>
+            </label>
+            <label>Boktittel
+              <input id="bookTitleInput" type="text" value="En matreise verden rundt" maxlength="80">
+            </label>
+            <label class="book-check-row"><input id="bookIncludeOriginals" type="checkbox"><span>Ta med alle originalbildene i en egen mappe</span></label>
+            <button class="primary-button book-export-button" id="exportPhotoBookButton" type="button">Eksporter trykkklar fotobok</button>
+            <div class="book-export-progress" id="bookExportProgress" hidden aria-live="polite">
+              <div><span id="bookExportStatus">Forbereder sider …</span><strong id="bookExportProgressText">0%</strong></div>
+              <div class="world-progress"><i id="bookExportProgressBar"></i></div>
+            </div>
+            <p class="book-export-hint">Pakken inneholder forside, bakside, nummererte JPG-sider, manifest og opplastingsguide. Tekst holdes innenfor en sikker skjæremargin.</p>
+          </div>
+        </div>
+
+        <div class="provider-notes">
+          <div><strong>FotoKnudsen</strong><span>JPG/PNG kan lastes opp i nettredigeringen. Velg samme format som eksportpakken.</span></div>
+          <div><strong>Japan Photo / CEWE</strong><span>Last sidene inn i numerisk rekkefølge og bruk helsideoppsett. Kontroller automatisk beskjæring.</span></div>
+          <div><strong>Trygg arkivering</strong><span>Ta også JSON-backup. Fotobokpakken er et trykkprodukt, ikke erstatning for rådata.</span></div>
+        </div>
+      </section>
+
+      <div class="print-only" id="printCookbook"></div>
+    </section>
+  </main>
+
+  <div class="timer-dock" id="timerDock" hidden aria-live="polite">
+    <div><span id="timerStepLabel">Timer</span><strong id="timerDisplay">00:00</strong></div>
+    <button type="button" id="timerToggleButton">Pause</button>
+    <button type="button" id="timerCloseButton" aria-label="Lukk timer">×</button>
+  </div>
+
+  <dialog class="app-dialog" id="completionDialog">
+    <form method="dialog" class="dialog-shell" id="completionForm">
+      <header>
+        <div><p class="eyebrow">Nytt kokebokkapittel</p><h2 id="completionTitle">Dokumenter kvelden</h2></div>
+        <button class="dialog-close" value="cancel" aria-label="Lukk">×</button>
+      </header>
+
+      <div class="dialog-grid">
+        <section>
+          <label class="photo-drop" for="photoInput">
+            <input id="photoInput" type="file" accept="image/*" multiple>
+            <span aria-hidden="true">＋</span>
+            <strong>Legg til bilder</strong>
+            <small>Velg gjerne både retten, bordet og et bilde av dere.</small>
+          </label>
+          <div class="photo-preview-grid" id="photoPreviewGrid"></div>
+        </section>
+
+        <section class="entry-fields">
+          <div class="two-columns">
+            <label>Dato<span class="date-wrapper"><input id="cookedAtInput" type="date" required></span></label>
+            <label>Faktisk tid<input id="actualMinutesInput" type="number" min="1" step="1" placeholder="90"><small>minutter</small></label>
+          </div>
+          <div class="two-columns">
+            <label>Kostnad<input id="costInput" type="number" min="0" step="1" placeholder="350"><small>kr</small></label>
+            <label>Hvem gjorde hva?<input id="rolesInput" type="text" placeholder="Person 1: saus · Person 2: kjøtt"></label>
+          </div>
+
+          <fieldset class="rating-fieldset"><legend>Person 1 sin vurdering</legend><div class="rating-row" data-rating-owner="person1"></div></fieldset>
+          <fieldset class="rating-fieldset"><legend>Person 2 sin vurdering</legend><div class="rating-row" data-rating-owner="person2"></div></fieldset>
+
+          <label>Hva endret dere?<textarea id="twistInput" rows="3" placeholder="Mer syre, sprø topping, annen steketid …"></textarea></label>
+          <label>Hva lærte dere?<textarea id="notesInput" rows="3" placeholder="Hva fungerte, og hva krevde justering underveis?"></textarea></label>
+          <label>Neste gang<textarea id="nextTimeInput" rows="2" placeholder="Én konkret forbedring til neste forsøk."></textarea></label>
+          <label>Minne fra kvelden<textarea id="memoryInput" rows="3" placeholder="Det morsomme, kaotiske eller fine dere vil huske."></textarea></label>
+        </section>
+      </div>
+
+      <footer>
+        <span id="completionStorageNote">Bildene lagres lokalt i full PWA-modus.</span>
+        <button class="primary-button" id="saveEntryButton" value="default">Lagre kapittelet</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog class="app-dialog" id="entryDialog">
+    <article class="dialog-shell entry-detail" id="entryDetail"></article>
+  </dialog>
+
+  <dialog class="app-dialog" id="profileDialog">
+    <form method="dialog" class="dialog-shell profile-dialog" id="profileForm">
+      <header><div><p class="eyebrow">Profil og synk</p><h2>Verdensbordet</h2></div><button class="dialog-close" value="cancel" aria-label="Lukk">×</button></header>
+      <section class="profile-local">
+        <div class="profile-pair"><div>1</div><div>2</div></div>
+        <div><strong id="profileModeHeading">Lokal modus</strong><p id="profileModeCopy">Alt lagres på denne enheten i IndexedDB. Sett opp Supabase for innlogging og synk mellom telefoner.</p></div>
+      </section>
+      <section id="cloudAuthSection">
+        <label>E-post for magisk innloggingslenke<input id="cloudEmailInput" type="email" autocomplete="email" placeholder="navn@epost.no"></label>
+        <button class="primary-button" id="magicLinkButton" type="button">Send innloggingslenke</button>
+        <button class="secondary-button" id="syncNowButton" type="button" hidden>Synkroniser nå</button>
+        <button class="text-button" id="signOutButton" type="button" hidden>Logg ut</button>
+      </section>
+      <section class="data-controls">
+        <button class="secondary-button" id="profileExportButton" type="button">Ta backup</button>
+        <button class="danger-button" id="resetDataButton" type="button">Slett lokale data</button>
+      </section>
+    </form>
+  </dialog>
+
+  <dialog class="app-dialog" id="countryBrowserDialog">
+    <div class="dialog-shell country-browser">
+      <header><div><p class="eyebrow">197 destinasjoner</p><h2>Velg land manuelt</h2></div><button class="dialog-close" id="closeCountryBrowser" type="button" aria-label="Lukk">×</button></header>
+      <label>Søk etter land eller rett<input id="countrySearchInput" type="search" placeholder="Japan, ceviche, Europa …"></label>
+      <div id="countryBrowserGrid" class="country-browser-grid"></div>
+    </div>
+  </dialog>
+
+  <dialog class="app-dialog shopping-dialog" id="shoppingDialog">
+    <div class="dialog-shell shopping-dialog-shell">
+      <header>
+        <div><p class="eyebrow">Smart handleliste · norske butikker</p><h2 id="shoppingDialogTitle">Velg butikk</h2></div>
+        <button class="dialog-close" id="closeShoppingDialog" type="button" aria-label="Lukk">×</button>
+      </header>
+
+      <div class="shopping-intro">
+        <div><span>Oppskrift</span><strong id="shoppingRecipeLabel">—</strong></div>
+        <div><span>Porsjoner</span><strong id="shoppingServingsLabel">—</strong></div>
+        <div><span>Varer</span><strong id="shoppingItemCount">0</strong></div>
+      </div>
+
+      <section class="shopping-section" aria-labelledby="retailerHeading">
+        <div class="shopping-section-heading"><div><span>01</span><h3 id="retailerHeading">Velg butikk</h3></div><small>Nettbutikk eller sjekkliste i fysisk butikk</small></div>
+        <div class="retailer-grid" id="retailerGrid"></div>
+      </section>
+
+      <section class="shopping-section" aria-labelledby="substitutionHeading">
+        <div class="shopping-section-heading"><div><span>02</span><h3 id="substitutionHeading">Tilgjengelighet og erstatninger</h3></div></div>
+        <div class="shopping-preference" role="group" aria-label="Velg råvarestrategi">
+          <button type="button" class="is-active" data-shopping-mode="authentic">Autentisk når mulig</button>
+          <button type="button" data-shopping-mode="easy">Enklest i norsk butikk</button>
+        </div>
+        <p class="shopping-disclaimer" id="shoppingRetailerNote">Direkte produktsøk åpnes i valgt butikk. Sjekk lagerstatus og pakningsstørrelse før du legger varen i kurven.</p>
+      </section>
+
+      <section class="shopping-section" aria-labelledby="shoppingItemsHeading">
+        <div class="shopping-section-heading"><div><span>03</span><h3 id="shoppingItemsHeading">Handlelisten</h3></div><small id="shoppingSubstitutionCount">0 erstatninger</small></div>
+        <div class="shopping-items" id="shoppingItems"></div>
+      </section>
+
+      <footer class="shopping-footer">
+        <div class="shopping-footer-copy"><strong id="shoppingFooterTitle">Klar for handling</strong><span id="shoppingFooterCopy">Velg butikk og åpne søkene vare for vare.</span></div>
+        <div class="shopping-footer-actions">
+          <button class="text-button" id="copyRetailerListButton" type="button">Kopier liste</button>
+          <button class="secondary-button" id="downloadRetailerListButton" type="button">Last ned .txt</button>
+          <a class="primary-button" id="openRetailerButton" href="#" target="_blank" rel="noopener noreferrer">Åpne butikk</a>
+        </div>
+      </footer>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <canvas class="confetti-canvas" id="confettiCanvas" aria-hidden="true"></canvas>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
